@@ -1,8 +1,22 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { AppModule } from './modules/app.module';
+import { ValidationPipe } from '@nestjs/common';
+
+const swaggerConfig = new DocumentBuilder()
+  .setTitle('ToDo example')
+  .setDescription('Simple ToDo API on NestJS')
+  .setVersion('1.0')
+  .build();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
+
+  app.useGlobalPipes(new ValidationPipe());
+
+  const swaggerDoc = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api-docs', app, swaggerDoc);
+
+  await app.listen(5000);
 }
 bootstrap();
